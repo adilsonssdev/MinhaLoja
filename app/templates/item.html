@@ -1,42 +1,68 @@
 {% extends "base.html" %}
 
 {% block title %}
-	{{ item.name }} - Flask-O-shop
+{{ item.name }} - MiniLoja
 {% endblock %}
 
 {% block content %}
-	{% with msgs =  get_flashed_messages(with_categories=True) %}
-	{% for c, msg in msgs %}
-		{% if c == 'error' %}
-			<div class="flash-error">
-		{% else %}
-			<div class="success">
-		{% endif %}
-			{{ msg | safe}}</div><br>
-	{% endfor %}
-	{% endwith %}
+<div class="row py-5 align-items-center">
 
-			<div class="item-display">
-				<div class="img-wrapper">
-					<img src="{{ item.image }}" class="pic">
+	<!-- Details Column (Mobile Order 2, Desktop Order 1 or 2 depending on preference. Let's do Image Left) -->
+	<div class="col-md-6 mb-4 mb-md-0">
+		<div class="bg-white rounded-3 shadow-sm p-5 d-flex align-items-center justify-content-center h-100">
+			<img src="{{ item.image }}" alt="{{ item.name }}" class="img-fluid"
+				style="max-height: 400px; object-fit: contain;">
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="ps-md-4">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb bg-transparent p-0 mb-2">
+					<li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none">Home</a>
+					</li>
+					<li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+				</ol>
+			</nav>
+
+			<h1 class="display-5 fw-bold mb-3">{{ item.name }}</h1>
+
+			<div class="mb-3 d-flex align-items-center">
+				<div class="rating-stars me-2 fs-5">
+					{% for i in range(5) %}
+					<i class="fa fa-star text-warning"></i>
+					{% endfor %}
 				</div>
-				<b>{{ item.name }}</b>
-				<span class="right-item">${{ item.price }}</span><br>
-                <i class="fa fa-star checked"></i>
-                <i class="fa fa-star checked"></i>
-                <i class="fa fa-star checked"></i>
-                <i class="fa fa-star checked"></i>
-                <i class="fa fa-star checked"></i>
-                <span class="text-muted" >({{ range(1, 51) | random }})</span>
-                <div class="details">{{ item.details | safe }}</div>
-
-                <form action="{{ url_for('add_to_cart', id=item.id) }}" method="POST">
-                    Quantity: 
-                    <input type="number" value="1" name="quantity" min="1" max="50" onkeyup="if(this.value > 50) this.value=50;" required>
-                    <br><br>
-					<input type="submit" class="add-to-cart" value="Add to Cart" name="add">
-                </form>
-				</a>
+				<span class="text-muted small">({{ range(10, 100) | random }} reviews)</span>
 			</div>
+
+			<h2 class="display-6 fw-bold text-primary mb-4">${{ item.price }}</h2>
+
+			<p class="lead text-secondary mb-4">{{ item.details | safe }}</p>
+
+			<hr class="my-4">
+
+			<form action="{{ url_for('add_to_cart', id=item.id) }}" method="POST">
+				<div class="row g-3 align-items-center mb-4">
+					<div class="col-auto">
+						<label for="quantity" class="col-form-label fw-bold">Quantity:</label>
+					</div>
+					<div class="col-auto">
+						<input type="number" id="quantity" name="quantity" class="form-control text-center" value="1"
+							min="1" max="50" style="width: 80px;" onkeyup="if(this.value > 50) this.value=50;" required>
+					</div>
+				</div>
+
+				<button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
+					<i class="fa fa-cart-shopping me-2"></i> Add to Cart
+				</button>
+			</form>
+		</div>
+	</div>
+
+</div>
+
+<!-- Related Products Placeholder (Optional) -->
+<!-- ... -->
 
 {% endblock %}

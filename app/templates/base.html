@@ -1,87 +1,138 @@
-{% import "bootstrap/wtf.html" as wtf %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-    <title>{% block title %} {% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Flask-O-shop{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   </head>
-  <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand" href="{{ url_for('home') }}">Flask-O-shop</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <body class="d-flex flex-column min-vh-100 bg-light">
     
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <form class="form-inline my-2 my-lg-0 ml-auto" action="{{ url_for('search') }}">
-          <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search" size="40" required>
-          <input class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">
-        </form>
-        <ul class="navbar-nav ml-auto">
-          {% if not current_user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-          </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('register') }}">Register</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="#">
-                <i class='fa fa-bell' style='font-size:24px'></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('cart') }}">
-                <i class="fa fa-shopping-cart" style="font-size:25px"></i>
-              </a>
-            </li>
-          
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class='fa fa-user-circle' style='font-size:25px'></i>
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <span class="nav-link text-muted">{{ current_user.name }}</a>
-              <div class="dropdown-divider"></div>
-              <a class="nav-link" href="{{ url_for('orders') }}">Orders</a>
-              {% if current_user.admin == 1 %}
-              <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a>
-              {% endif %}
-              <a class="nav-link" href="{{ url_for('logout') }}"><font color="red">Logout</font></a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+      <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="{{ url_for('home') }}">
+          <i class="fa-solid fa-store me-2"></i>MiniLoja
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <form class="d-flex mx-auto col-lg-5 my-2 my-lg-0" action="{{ url_for('search') }}">
+            <div class="input-group">
+              <input class="form-control border-end-0 bg-light" type="search" name="query" placeholder="Search for products..." required>
+              <button class="btn btn-light border border-start-0" type="submit">
+                <i class="fa fa-search text-muted"></i>
+              </button>
             </div>
-          </li>
-          {% endif %}
-        </ul>
+          </form>
+
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+            {% if not current_user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link px-3 fw-medium" href="{{ url_for('home') }}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link px-3 fw-medium" href="{{ url_for('login') }}">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="btn btn-primary ms-2 rounded-pill px-4 fw-medium" href="{{ url_for('register') }}">Register</a>
+              </li>
+            {% else %}
+              <li class="nav-item me-3">
+                <a class="nav-link position-relative" href="{{ url_for('cart') }}">
+                  <i class="fa-solid fa-cart-shopping fs-5"></i>
+                  {% set cart_count = current_user.cart|length %}
+                  {% if cart_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                      {{ cart_count }}
+                    </span>
+                  {% endif %}
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                  <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    {{ current_user.name[0]|upper }}
+                  </div>
+                  <span class="fw-medium">{{ current_user.name.split()[0] }}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg">
+                  <li><a class="dropdown-item" href="{{ url_for('orders') }}"><i class="fa-solid fa-box me-2 text-muted"></i>My Orders</a></li>
+                  {% if current_user.admin == 1 %}
+                    <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-gauge me-2 text-muted"></i>Admin</a></li>
+                  {% endif %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                </ul>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </nav>
 
-    <div class="container">
-      <div class="main">
-        {% block content %}
-        {% endblock %}
+    <!-- Main Content -->
+    <main class="flex-grow-1 py-4">
+      <div class="container">
+        {% block content %}{% endblock %}
       </div>
-    </div>
-    <footer class="bg-light text-center text-lg-start">
-      <div class="text-center p-3">
-        © {{ now.year }} Copyright:
-        Flask-O-shop
-      </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-auto">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <h5 class="fw-bold text-primary mb-3">MiniLoja</h5>
+            <p class="text-secondary small">Your one-stop shop for everything amazing. Quality products, fast shipping, and excellent customer service.</p>
+            <div class="d-flex gap-3">
+               <a href="#" class="text-secondary hover-text-white"><i class="fab fa-facebook fa-lg"></i></a>
+               <a href="#" class="text-secondary hover-text-white"><i class="fab fa-instagram fa-lg"></i></a>
+               <a href="#" class="text-secondary hover-text-white"><i class="fab fa-twitter fa-lg"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-2 col-md-6">
+            <h6 class="fw-bold mb-3">Shop</h6>
+            <ul class="list-unstyled small text-secondary">
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">New Arrivals</a></li>
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Best Sellers</a></li>
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Sale</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-md-6">
+             <h6 class="fw-bold mb-3">Support</h6>
+             <ul class="list-unstyled small text-secondary">
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Help Center</a></li>
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Returns</a></li>
+              <li class="mb-2"><a href="#" class="text-decoration-none text-secondary hover-text-white">Contact Us</a></li>
+             </ul>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <h6 class="fw-bold mb-3">Subscribe</h6>
+            <p class="small text-secondary">Get the latest updates and offers.</p>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control border-secondary bg-transparent text-light" placeholder="Your email">
+              <button class="btn btn-primary" type="button">Subscribe</button>
+            </div>
+          </div>
+        </div>
+        <hr class="border-secondary my-4">
+        <div class="text-center small text-secondary">
+          &copy; {{ now.year }} MiniLoja. All rights reserved.
+        </div>
+      </div>
     </footer>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

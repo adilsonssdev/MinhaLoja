@@ -1,7 +1,7 @@
 import os, stripe, json
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request, abort
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap5
 from .forms import LoginForm, RegisterForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
@@ -26,7 +26,8 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_PORT'] = 587
 stripe.api_key = os.environ["STRIPE_PRIVATE"]
 
-Bootstrap(app)
+# Bootstrap(app)
+bootstrap = Bootstrap5(app)
 db.init_app(app)
 mail.init_app(app)
 login_manager = LoginManager()

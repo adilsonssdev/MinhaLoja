@@ -1,12 +1,23 @@
 {% extends "base.html" %}
 
 {% block title %}
-	Payment Failure - Flask-O-shop
+Payment Failure - MiniLoja
 {% endblock %}
 
 {% block content %}
-    <div class="flash-error">
-        Payment couldn't be completed. Please try again.
-        <a href="{{ url_for('cart') }}">Go back!</a>
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow-sm border-0 rounded-3 p-5">
+            <div class="mb-4 text-danger">
+                <i class="fa fa-times-circle fa-5x"></i>
+            </div>
+            <h2 class="fw-bold mb-3">Payment Failed</h2>
+            <p class="text-muted mb-4">Something went wrong with your payment. Please try again or contact support.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('cart') }}" class="btn btn-primary px-4">Try Again</a>
+                <a href="#" class="btn btn-outline-secondary px-4">Contact Support</a>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

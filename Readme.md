@@ -1,29 +1,71 @@
-# Flask-O-shop
-An E-Commerce app built with Python Flask
+# MiniLoja-shop
 
-**Features:**
- - Cart, orders, and items feature with proper order processing system
- - Proper user authentication and authorization
- - Stripe Payment Integration
- - Custom admin panel for order processing and managing items
- - Item Search feature
- - Boostrap + custom CSS UI
+A modern E-Commerce application built with Python Flask, featuring a premium responsive UI and robust functionality.
 
-# Prerequisties
+![MiniLoja](https://via.placeholder.com/800x400?text=MiniLoja+Preview)
 
- - [Python](https://www.python.org/)
- - Stripe API key for Stripe Payment Integration
- - [Stripe webhook setup](https://stripe.com/docs/payments/handling-payment-events#install-cli)
+## Features
 
-# Installation
-Downloading files:
+- **Modern UI/UX**: Responsive design using Bootstrap 5 and custom CSS.
+- **Shopping Cart**: Full-fledged cart system with quantity adjustment.
+- **User System**: Secure authentication (Login/Register) with email confirmation support.
+- **Order Management**: Users can view their order history and status.
+- **Admin Panel**: For managing products and orders.
+- **Payment Integration**: Stripe checkout integration.
+- **Search**: Real-time product search functionality.
+
+## Prerequisites
+
+- Python 3.8+
+- [Stripe Account](https://stripe.com) (for payment testing)
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/diwash007/Flask-O-shop.git
+   cd MiniLoja-shop
+   ```
+
+2. **Create a Virtual Environment (Recommended):**
+   ```bash
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
+
+   # Linux/Mac
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Environment Setup:**
+   Create a `.env` file in the root directory (copy from `env-example.txt` if available) and add your configuration:
+   ```env
+   SECRET_KEY=your_secret_key
+   DB_URI="sqlite:///shop.db"
+   EMAIL=your_email@gmail.com
+   PASSWORD=your_app_password
+   STRIPE_PUBLIC=pk_test_...
+   STRIPE_PRIVATE=sk_test_...
+   ENDPOINT_SECRET=whsec_...
+   ```
+   > **Note:** For development, you can use dummy values for email and stripe if you are just testing the UI.
+
+5. **Initialize Database:**
+   The application automatically creates the database tables on first run (in `app.py`).
+
+## Running the Application
+
+```bash
+python app.py
 ```
-git clone https://github.com/diwash007/Flask-O-shop.git
-```
-Installing requirements:
-```py
-pip install -r requirements.txt
-```
+Open your browser and visit `http://127.0.0.1:5000`.
 
-# Live Project
-https://flaskoshop.gilobyte.com
+## License
+
+MIT

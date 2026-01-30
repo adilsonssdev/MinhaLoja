@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 
 {% block title %}
-	Payment Success - Flask-O-shop
+Payment Success - MiniLoja
 {% endblock %}
 
 {% block content %}
-    <div class="success">
-        Payment successful!!<br>
-        Order placed successfully.
-        <a href="{{ url_for('orders') }}">View order</a>
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow-sm border-0 rounded-3 p-5">
+            <div class="mb-4 text-success">
+                <i class="fa fa-check-circle fa-5x"></i>
+            </div>
+            <h2 class="fw-bold mb-3">Payment Successful!</h2>
+            <p class="text-muted mb-4">Your order has been placed successfully. We've sent a confirmation email to your
+                inbox.</p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('orders') }}" class="btn btn-outline-primary px-4">View Order</a>
+                <a href="{{ url_for('home') }}" class="btn btn-primary px-4">Continue Shopping</a>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

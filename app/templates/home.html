@@ -1,77 +1,115 @@
 {% extends "base.html" %}
 
 {% block title %}
-	Home - Flask-O-shop
+Home - MiniLoja
 {% endblock %}
 
 {% block content %}
-	{% with msgs =  get_flashed_messages(with_categories=True) %}
-	{% for c, msg in msgs %}
-		{% if c == 'error' %}
-			<div class="flash-error">
-		{% else %}
-			<div class="success">
-		{% endif %}
-			{{ msg | safe}}</div><br>
-	{% endfor %}
-	{% endwith %}
 
-	{% if search %}
-	<h3>Search results for "{{ query }}":</h3>
-	{% else %}
-	<h3>New Arrivals</h3>
-	<br>
-	<div class="items">
-	{% for item in items[::-1] %}
-	<a href="{{ url_for('item', id=item.id) }}">
-		<div class="item">
-			<div class="item-wrapper">
-				<div class="img-wrapper">
-					<img src="{{ item.image }}" class="pic">
-				</div>
-				{{ item.name }}
-				<span class="right-item">${{ item.price }}</span><br>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<span class="text-muted" >({{ range(1, 51) | random }})</span>
-			</div>
-		</div>
-	</a>
-	{% endfor %}
+<!-- Hero Section (Optional, adds to the "modern" feel) -->
+{% if not search %}
+<div class="p-5 mb-5 bg-primary text-white rounded-3 shadow-sm text-center"
+	style="background: linear-gradient(135deg, #0d6efd 0%, #0099ff 100%);">
+	<div class="container-fluid py-3">
+		<h1 class="display-5 fw-bold">Welcome to MiniLoja</h1>
+		<p class="col-md-8 fs-5 mx-auto">Discover the latest trends in tech, fashion, and more.</p>
+		<button class="btn btn-light btn-lg fw-medium mt-2" type="button">Shop Now</button>
 	</div>
+</div>
+{% endif %}
 
-	<br><br><h3>Most Popular</h3>
-	{% endif %}
-	<br>
-	<div class="items">
+<!-- Flash Messages -->
+{% with msgs = get_flashed_messages(with_categories=True) %}
+{% if msgs %}
+{% for c, msg in msgs %}
+<div class="alert alert-{{ 'danger' if c == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+	{{ msg | safe }}
+	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<!-- Search Results Header -->
+{% if search %}
+<h3 class="mb-4">Search results for "{{ query }}"</h3>
+{% else %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+	<h3 class="fw-bold mb-0">New Arrivals</h3>
+	<a href="#" class="text-primary text-decoration-none fw-medium">View All <i class="fa fa-arrow-right ms-1"></i></a>
+</div>
+{% endif %}
+
+<!-- New Arrivals Grid -->
+{% if not items and search %}
+<div class="text-center py-5">
+	<i class="fa fa-search fa-3x text-muted mb-3"></i>
+	<h3>No items found</h3>
+	<p class="text-muted">Try a different search term or browse our catalogue.</p>
+	<a href="{{ url_for('home') }}" class="btn btn-primary mt-2">Go Home</a>
+</div>
+{% else %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+	{% for item in (items[::-1] if not search else items) %}
+	<div class="col">
+		<a href="{{ url_for('item', id=item.id) }}">
+			<div class="card card-product h-100">
+				<div class="img-wrapper">
+					<img src="{{ item.image }}" alt="{{ item.name }}">
+				</div>
+				<div class="card-product-body d-flex flex-column h-100">
+					<div class="card-product-title">{{ item.name }}</div>
+					<div class="d-flex justify-content-between align-items-center mt-auto">
+						<span class="card-product-price">${{ item.price }}</span>
+						<div class="rating-stars">
+							{% for i in range(5) %}
+							<i class="fa fa-star"></i>
+							{% endfor %}
+							<span class="text-secondary ms-1 small">({{ range(10, 100) | random }})</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+	{% endfor %}
+</div>
+
+<!-- Most Popular Section (Only show on Home) -->
+{% if not search %}
+<div class="d-flex justify-content-between align-items-center mb-4 pt-4 border-top">
+	<h3 class="fw-bold mb-0">Most Popular</h3>
+	<a href="#" class="text-primary text-decoration-none fw-medium">View All <i class="fa fa-arrow-right ms-1"></i></a>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
 	{% for item in items %}
-	<a href="{{ url_for('item', id=item.id) }}">
-		<div class="item">
-			<div class="item-wrapper">
+	<div class="col">
+		<a href="{{ url_for('item', id=item.id) }}">
+			<div class="card card-product h-100">
 				<div class="img-wrapper">
-					<img src="{{ item.image }}" class="pic">
+					<img src="{{ item.image }}" alt="{{ item.name }}">
 				</div>
-				{{ item.name }}
-				<span class="right-item">${{ item.price }}</span><br>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<i class="fa fa-star checked"></i>
-					<span class="text-muted" >({{ range(1, 51) | random }})</span>
+				<div class="card-product-body d-flex flex-column h-100">
+					<div class="card-product-title">{{ item.name }}</div>
+					<div class="d-flex justify-content-between align-items-center mt-auto">
+						<span class="card-product-price">${{ item.price }}</span>
+						<div class="rating-stars">
+							{% for i in range(5) %}
+							<i class="fa fa-star"></i>
+							{% endfor %}
+							<span class="text-secondary ms-1 small">({{ range(50, 200) | random }})</span>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
-	</a>
+		</a>
+	</div>
 	{% endfor %}
-	</div>
+</div>
+{% endif %}
 
-	{% if not items %}
-	<div class="flash-error">
-		No items found.<br>
-		<a href="{{ url_for('home') }}">Discover new items</a>
-	</div>
-	{% endif %}
+{% endif %}
+
 {% endblock %}
