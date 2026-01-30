@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Cabeçalho -->
+            <div class="mb-4">
+                <h1 class="mb-1"><i class="fa-solid fa-user-edit me-3"></i>Editar Cliente</h1>
+                <p class="text-muted">Atualize os dados do cliente {{ client.name }}</p>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('list_clients') }}">Clientes</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('view_client', client_id=client.id) }}">{{ client.name }}</a></li>
+                    <li class="breadcrumb-item active">Editar</li>
+                </ol>
+            </nav>
+
+            <!-- Formulário de Edição -->
+            <form method="POST" class="needs-validation" novalidate>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <!-- Seção 1: Informações Pessoais -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3"><i class="fa-solid fa-user me-2"></i>Informações Pessoais</h5>
+                            <hr>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Nome <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="name" name="name" value="{{ client.name }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o nome do cliente.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">E-mail <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control form-control-lg" id="email" name="email" value="{{ client.email }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe um e-mail válido.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Telefone <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control form-control-lg" id="phone" name="phone" value="{{ client.phone }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o telefone.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="cpf" class="form-label">CPF <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="cpf" name="cpf" value="{{ client.cpf or '' }}" placeholder="000.000.000-00" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o CPF.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 2: Endereço -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3"><i class="fa-solid fa-map-location-dot me-2"></i>Endereço</h5>
+                            <hr>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="cep" class="form-label">CEP <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="cep" name="cep" value="{{ client.cep or '' }}" placeholder="00000-000" required>
+                                    <div id="cep-loading" class="mt-2" style="display: none;">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                            <span class="visually-hidden">Carregando...</span>
+                                        </div>
+                                        <span class="ms-2 text-muted small">Buscando endereço...</span>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe um CEP válido.
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="address" class="form-label">Rua <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="address" name="address" value="{{ client.address or '' }}" readonly>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label for="address_number" class="form-label">Número <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="address_number" name="address_number" value="{{ client.address_number or '' }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o número.
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <label for="city" class="form-label">Cidade <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="city" name="city" value="{{ client.city or '' }}" readonly>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="state" class="form-label">Estado <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="state" name="state" value="{{ client.state or '' }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 3: Dados Bancários -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3"><i class="fa-solid fa-building me-2"></i>Dados Bancários</h5>
+                            <hr>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="bank" class="form-label">Banco <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-lg" id="bank" name="bank" value="{{ client.bank or '' }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o banco.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seção 4: Status -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3"><i class="fa-solid fa-toggle-on me-2"></i>Status</h5>
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-lg" id="status" name="status" required>
+                                        <option value="">Selecione um status</option>
+                                        <option value="ATIVO" {% if client.status == 'ATIVO' %}selected{% endif %}>Ativo</option>
+                                        <option value="INATIVO" {% if client.status == 'INATIVO' %}selected{% endif %}>Inativo</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor, selecione um status.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Alterações
+                    </button>
+                    <a href="{{ url_for('view_client', client_id=client.id) }}" class="btn btn-secondary btn-lg flex-grow-1">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validação do Formulário
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
+    // ViaCEP Integration
+    document.getElementById('cep').addEventListener('blur', function() {
+        let cep = this.value.replace(/\D/g, '');
+        if (cep.length !== 8) {
+            alert('CEP deve conter 8 dígitos');
+            return;
+        }
+        
+        document.getElementById('cep-loading').style.display = 'flex';
+        
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('cep-loading').style.display = 'none';
+                if (data.erro) {
+                    alert('CEP não encontrado');
+                    return;
+                }
+                document.getElementById('address').value = data.logradouro;
+                document.getElementById('city').value = data.localidade;
+                document.getElementById('state').value = data.uf;
+            })
+            .catch(error => {
+                document.getElementById('cep-loading').style.display = 'none';
+                console.error('Erro ao buscar CEP:', error);
+            });
+    });
+</script>
+
+<style>
+    .card {
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0.5rem 0;
+    }
+
+    .breadcrumb-item a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+
+    .text-danger {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

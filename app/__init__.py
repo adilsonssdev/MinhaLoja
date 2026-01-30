@@ -265,6 +265,64 @@ def view_client(client_id):
     return render_template("client_detail.html", client=client)
 
 
+@app.route("/client/<int:client_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_client(client_id):
+    client = Client.query.get_or_404(client_id)
+
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        cpf = request.form.get("cpf")
+        cep = request.form.get("cep")
+        address = request.form.get("address")
+        address_number = request.form.get("address_number")
+        city = request.form.get("city")
+        state = request.form.get("state")
+        bank = request.form.get("bank")
+        status = request.form.get("status")
+
+        # Validar se email já existe (exceto para o próprio cliente)
+        existing_client = Client.query.filter_by(email=email).first()
+        if existing_client and existing_client.id != client_id:
+            flash("Este e-mail já está cadastrado para outro cliente!", "error")
+            return redirect(url_for("edit_client", client_id=client_id))
+
+        # Atualizar dados do cliente
+        client.name = name
+        client.email = email
+        client.phone = phone
+        client.cpf = cpf
+        client.cep = cep
+        client.address = address
+        client.address_number = address_number
+        client.city = city
+        client.state = state
+        client.bank = bank
+        client.status = status
+
+        db.session.commit()
+        flash("Cliente atualizado com sucesso!", "success")
+        return redirect(url_for("view_client", client_id=client_id))
+
+    return render_template("edit_client.html", client=client)
+
+
+@app.route("/client/<int:client_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete_client(client_id):
+    client = Client.query.get_or_404(client_id)
+
+    if request.method == "POST":
+        db.session.delete(client)
+        db.session.commit()
+        flash("Cliente deletado com sucesso!", "success")
+        return redirect(url_for("list_clients"))
+
+    return render_template("delete_client.html", client=client)
+
+
 @app.route("/search")
 def search():
     query = request.args["query"]
