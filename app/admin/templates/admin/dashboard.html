@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - MiniLoja{% endblock %}
+
+{% block content %}
+<div class="py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Admin Dashboard</h2>
+        <a href="{{ url_for('admin.add_item') }}" class="btn btn-primary">
+            <i class="fa fa-plus me-2"></i> Add New Item
+        </a>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products"
+                type="button">Products</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders"
+                type="button">Orders</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+        <!-- Products Tab -->
+        <div class="tab-pane fade show active" id="products">
+            <div class="bg-white rounded-3 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td class="ps-4">{{ item.id }}</td>
+                                <td><img src="{{ item.image }}" alt=""
+                                        style="width: 40px; height: 40px; object-fit: contain;"></td>
+                                <td class="fw-medium">{{ item.name }}</td>
+                                <td>${{ item.price }}</td>
+                                <td><span class="badge bg-secondary">{{ item.category }}</span></td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('admin.edit_item', item_id=item.id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1"><i class="fa fa-edit"></i></a>
+                                    <a href="{{ url_for('admin.delete_item', item_id=item.id) }}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Are you sure?')"><i class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-pane fade" id="orders">
+            <div class="bg-white rounded-3 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Order ID</th>
+                                <th>User</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="ps-4">#{{ order.id }}</td>
+                                <td>{{ order.customer.name }}<br><small class="text-muted">{{ order.customer.email
+                                        }}</small></td>
+                                <td>{{ order.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td><span class="badge bg-info">{{ order.status }}</span></td>
+                                <td>
+                                    <ul class="list-unstyled mb-0 small">
+                                        {% for oi in order.items %}
+                                        <li>{{ oi.item.name }} (x{{ oi.quantity }})</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

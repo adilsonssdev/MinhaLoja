@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block title %}{{ title }} - MiniLoja{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="bg-white rounded-3 shadow-sm p-4 text-start">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">{{ title }}</h3>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+            </div>
+
+            {{ render_form(form, button_style='primary') }}
+        </div>
+    </div>
+</div>
+{% endblock %}
