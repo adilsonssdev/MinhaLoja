@@ -31,8 +31,14 @@
         <div class="col-md-3 mb-3">
             <div class="card border-0 shadow-sm bg-info text-white">
                 <div class="card-body">
-                    <h6 class="card-title opacity-75"><i class="fa-solid fa-calendar-plus me-2"></i>Taxa de Conversão</h6>
-                    <h2 class="card-text mb-0">100%</h2>
+                    <h6 class="card-title opacity-75"><i class="fa-solid fa-calendar-plus me-2"></i>Novos este Mês</h6>
+                    {% set ns = namespace(count=0) %}
+                    {% for client in clients %}
+                        {% if client.registration_date and client.registration_date.strftime('%Y-%m') == now.strftime('%Y-%m') %}
+                            {% set ns.count = ns.count + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    <h2 class="card-text mb-0">{{ ns.count }}</h2>
                 </div>
             </div>
         </div>
@@ -54,7 +60,7 @@
     {% if clients %}
     <div class="table-responsive shadow-sm rounded" style="max-height: 75vh; overflow: auto;">
         <table class="table table-hover table-striped mb-0 text-nowrap">
-            <thead class="table-dark" style="position: sticky; top: 0; z-index: 1;">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 10;">
                 <tr>
                     <th><i class="fa-solid fa-hashtag me-2"></i>ID</th>
                     <th><i class="fa-solid fa-user me-2"></i>Nome</th>
@@ -96,32 +102,34 @@
                         </button>
                     </td>
                 </tr>
-
-                <!-- Modal de Exclusão -->
-                <div class="modal fade" id="deleteModal{{ client.id }}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header bg-danger text-white">
-                                <h5 class="modal-title"><i class="fa-solid fa-exclamation-triangle me-2"></i>Confirmar Exclusão</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Tem certeza que deseja deletar o cliente <strong>{{ client.name }}</strong>?</p>
-                                <p class="text-muted small">Esta ação não pode ser desfeita.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <a href="{{ url_for('delete_client', client_id=client.id) }}" class="btn btn-danger">
-                                    <i class="fa-solid fa-trash me-2"></i>Deletar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Modals de Exclusão (Movidos para fora da tabela para manter HTML válido) -->
+    {% for client in clients %}
+    <div class="modal fade" id="deleteModal{{ client.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fa-solid fa-exclamation-triangle me-2"></i>Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja deletar o cliente <strong>{{ client.name }}</strong>?</p>
+                    <p class="text-muted small">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a href="{{ url_for('delete_client', client_id=client.id) }}" class="btn btn-danger">
+                        <i class="fa-solid fa-trash me-2"></i>Deletar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
     <div class="alert alert-info text-center py-5" role="alert">
         <i class="fa-solid fa-inbox fa-3x mb-3 d-block text-muted"></i>
