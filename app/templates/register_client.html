@@ -24,7 +24,7 @@
                             </div>
                             <div class="col-md-6 mb-4">
                                 <label for="phone" class="form-label fw-bold">Telefone <span class="text-danger">*</span></label>
-                                <input type="tel" class="form-control form-control-lg" id="phone" name="phone" placeholder="(11) 99999-9999" required>
+                                <input type="tel" class="form-control form-control-lg" id="phone" name="phone" placeholder="(11) 99999-9999" maxlength="15" required>
                             </div>
                         </div>
 
@@ -147,6 +147,19 @@
 </style>
 
 <script>
+    // Máscara de Telefone
+    document.getElementById('phone').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) {
+            value = value.slice(0, 11);
+        }
+        
+        value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+        value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+        
+        e.target.value = value;
+    });
+
     // Máscara e Validação de CPF
     document.getElementById('cpf').addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');

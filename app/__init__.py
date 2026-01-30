@@ -230,6 +230,13 @@ def register_client():
             flash("Cliente com este e-mail já existe!", "error")
             return redirect(url_for("register_client"))
 
+        # Validar se CPF já existe
+        if cpf:
+            existing_cpf = Client.query.filter_by(cpf=cpf).first()
+            if existing_cpf:
+                flash("Cliente com este CPF já existe!", "error")
+                return redirect(url_for("register_client"))
+
         # Criar novo cliente
         new_client = Client(
             name=name,
@@ -288,6 +295,13 @@ def edit_client(client_id):
         if existing_client and existing_client.id != client_id:
             flash("Este e-mail já está cadastrado para outro cliente!", "error")
             return redirect(url_for("edit_client", client_id=client_id))
+
+        # Validar se CPF já existe (exceto para o próprio cliente)
+        if cpf:
+            existing_cpf = Client.query.filter_by(cpf=cpf).first()
+            if existing_cpf and existing_cpf.id != client_id:
+                flash("Este CPF já está cadastrado para outro cliente!", "error")
+                return redirect(url_for("edit_client", client_id=client_id))
 
         # Atualizar dados do cliente
         client.name = name
