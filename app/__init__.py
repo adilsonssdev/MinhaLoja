@@ -11,7 +11,7 @@ from flask_login import (
     login_required,
     logout_user,
 )
-from .db_models import db, User, Item, Client
+from .db_models import db, User, Item, Client, PaymentMethod
 from itsdangerous import URLSafeTimedSerializer
 from .funcs import mail, send_confirmation_email, fulfill_order
 from dotenv import load_dotenv
@@ -409,6 +409,95 @@ def delete_product(item_id):
         )
 
     return render_template("delete_product.html", item=item)
+
+
+@app.route("/products/manage", methods=["GET"])
+@login_required
+def manage_products():
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+    items = Item.query.order_by(Item.id.desc()).all()
+    return render_template("products_manage.html", items=items)
+
+
+@app.route("/products/add", methods=["POST"])
+@login_required
+def add_product():
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+    name = request.form.get("name")
+    try:
+        price = float(request.form.get("price") or 0)
+    except Exception:
+        price = 0
+    category = request.form.get("category") or "Uncategorized"
+    details = request.form.get("details") or ""
+
+    new_item = Item(
+        name=name,
+        price=price,
+        category=category,
+        image="placeholder.png",
+        details=details,
+        price_id="",
+    )
+    db.session.add(new_item)
+    db.session.commit()
+    flash("Produto cadastrado com sucesso!", "success")
+    return redirect(url_for("manage_products"))
+
+
+@app.route("/payments/manage", methods=["GET"])
+@login_required
+def manage_payments():
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+    payments = PaymentMethod.query.order_by(PaymentMethod.id.desc()).all()
+    return render_template("payments_manage.html", payments=payments)
+
+
+@app.route("/payments/add", methods=["POST"])
+@login_required
+def add_payment_method():
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+    name = request.form.get("name")
+    description = request.form.get("description")
+    allow_installments = (
+        True if request.form.get("allow_installments") == "on" else False
+    )
+
+    exists = PaymentMethod.query.filter_by(name=name).first()
+    if exists:
+        flash("Forma de pagamento já cadastrada.", "error")
+        return redirect(url_for("manage_payments"))
+
+    pm = PaymentMethod(
+        name=name, description=description, allow_installments=allow_installments
+    )
+    db.session.add(pm)
+    db.session.commit()
+    flash("Forma de pagamento adicionada.", "success")
+    return redirect(url_for("manage_payments"))
+
+
+@app.route("/payments/<int:pm_id>/delete", methods=["POST", "GET"])
+@login_required
+def delete_payment_method(pm_id):
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+    pm = PaymentMethod.query.get_or_404(pm_id)
+    if request.method == "POST":
+        db.session.delete(pm)
+        db.session.commit()
+        flash("Forma de pagamento removida.", "success")
+        return redirect(url_for("manage_payments"))
+    return redirect(url_for("manage_payments"))
 
 
 @app.route("/search")

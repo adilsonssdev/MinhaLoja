@@ -83,3 +83,12 @@ class Client(db.Model):
     bank = db.Column(db.String(50), nullable=True)
     registration_date = db.Column(db.DateTime, nullable=False, default=db.func.now())
     status = db.Column(db.String(20), nullable=False, default="ATIVO")
+
+
+class PaymentMethod(db.Model):
+    __tablename__ = "payment_methods"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    description = db.Column(db.String(250), nullable=True)
+    allow_installments = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
