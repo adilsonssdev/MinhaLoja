@@ -3,10 +3,15 @@ from flask_login import login_required, current_user
 from app.db_models import db, Item, Order
 from .forms import ItemForm
 import csv
+import os
+from werkzeug.utils import secure_filename
 
 admin = Blueprint(
     "admin", __name__, template_folder="templates", static_folder="static"
 )
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "..", "static", "uploads")
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
 
 
 @admin.before_request
@@ -27,11 +32,27 @@ def dashboard():
 def add_item():
     form = ItemForm()
     if form.validate_on_submit():
+        image_filename = form.image.data
+
+        # Handle image upload if provided
+        if "image" in request.files:
+            image = request.files["image"]
+            if (
+                image
+                and "." in image.filename
+                and image.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+            ):
+                filename = secure_filename(image.filename)
+                if not os.path.exists(UPLOAD_FOLDER):
+                    os.makedirs(UPLOAD_FOLDER)
+                image.save(os.path.join(UPLOAD_FOLDER, filename))
+                image_filename = filename
+
         new_item = Item(
             name=form.name.data,
             price=form.price.data,
             category=form.category.data,
-            image=form.image.data,
+            image=image_filename,
             details=form.details.data,
             price_id=form.price_id.data,
         )
@@ -66,55 +87,3 @@ def delete_item(item_id):
     db.session.commit()
     flash("Item deleted.", "success")
     return redirect(url_for("admin.dashboard"))
-
-
-@admin.route("/admin/add_product", methods=["GET", "POST"])
-@login_required
-def add_product():
-    if not current_user.is_admin:
-        flash(
-            "Acesso negado: apenas administradores podem acessar esta página.", "danger"
-        )
-        return redirect(url_for("home"))
-
-    if request.method == "POST":
-        product_name = request.form.get("product_name")
-        product_value = request.form.get("product_value")
-
-        # Aqui você pode adicionar lógica para salvar o produto no banco de dados
-        flash(f"Produto {product_name} adicionado com sucesso!", "success")
-        return redirect(url_for("admin_dashboard"))
-
-    return render_template("admin/add_product.html")
-
-
-@admin.route("/admin/import_admins", methods=["GET", "POST"])
-@login_required
-def import_admins():
-    if not current_user.is_admin:
-        flash(
-            "Acesso negado: apenas administradores podem acessar esta página.", "danger"
-        )
-        return redirect(url_for("home"))
-
-    if request.method == "POST":
-        file = request.files.get("file")
-        if not file:
-            flash("Nenhum arquivo foi enviado.", "danger")
-            return redirect(url_for("import_admins"))
-
-        try:
-            csv_reader = csv.DictReader(file.stream)
-            for row in csv_reader:
-                # Aqui você pode adicionar lógica para salvar o administrador no banco de dados
-                # Exemplo: User.create_admin(row['email'], row['name'])
-                flash(
-                    f"Administrador {row['name']} ({row['email']}) adicionado com sucesso!",
-                    "success",
-                )
-        except Exception as e:
-            flash(f"Erro ao processar o arquivo: {str(e)}", "danger")
-
-        return redirect(url_for("admin_dashboard"))
-
-    return render_template("admin/import_admins.html")
