@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Administradores</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Importar Administradores</h1>
+        <form action="/admin/import_admins" method="POST" enctype="multipart/form-data">
+            <label for="file">Selecione o arquivo CSV:</label>
+            <input type="file" id="file" name="file" accept=".csv" required>
+
+            <button type="submit">Importar</button>
+        </form>
+    </div>
+</body>
+</html>

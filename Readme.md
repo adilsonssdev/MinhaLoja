@@ -23,7 +23,7 @@ A modern E-Commerce application built with Python Flask, featuring a premium res
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/diwash007/Flask-O-shop.git
+   git clone https://github.com/diwash007/Flask-O-shop.git 
    cd MiniLoja-shop
    ```
 
