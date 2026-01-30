@@ -32,11 +32,11 @@ def dashboard():
 def add_item():
     form = ItemForm()
     if form.validate_on_submit():
-        image_filename = form.image.data
+        image_filename = "placeholder.png"
 
-        # Handle image upload if provided
-        if "image" in request.files:
-            image = request.files["image"]
+        # Priority: uploaded file > URL > placeholder
+        if form.image_file.data:
+            image = form.image_file.data
             if (
                 image
                 and "." in image.filename
@@ -47,6 +47,8 @@ def add_item():
                     os.makedirs(UPLOAD_FOLDER)
                 image.save(os.path.join(UPLOAD_FOLDER, filename))
                 image_filename = filename
+        elif form.image_url.data:
+            image_filename = form.image_url.data
 
         new_item = Item(
             name=form.name.data,
@@ -54,7 +56,7 @@ def add_item():
             category=form.category.data,
             image=image_filename,
             details=form.details.data,
-            price_id=form.price_id.data,
+            price_id=form.price_id.data or "",
         )
         db.session.add(new_item)
         db.session.commit()
@@ -66,24 +68,41 @@ def add_item():
 @admin.route("/edit-item/<int:item_id>", methods=["GET", "POST"])
 def edit_item(item_id):
     item = Item.query.get_or_404(item_id)
-    form = ItemForm(obj=item)
+    form = ItemForm()
     if form.validate_on_submit():
         item.name = form.name.data
         item.price = form.price.data
         item.category = form.category.data
-        item.image = form.image.data
         item.details = form.details.data
-        item.price_id = form.price_id.data
+        item.price_id = form.price_id.data or ""
+
+        # Handle image update if provided
+        if form.image_file.data:
+            image = form.image_file.data
+            if (
+                image
+                and "." in image.filename
+                and image.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+            ):
+                filename = secure_filename(image.filename)
+                if not os.path.exists(UPLOAD_FOLDER):
+                    os.makedirs(UPLOAD_FOLDER)
+                image.save(os.path.join(UPLOAD_FOLDER, filename))
+                item.image = filename
+        elif form.image_url.data:
+            item.image = form.image_url.data
+        
         db.session.commit()
         flash("Item updated successfully.", "success")
         return redirect(url_for("admin.dashboard"))
-    return render_template("admin/add.html", form=form, title="Edit Item")
-
-
-@admin.route("/delete-item/<int:item_id>")
-def delete_item(item_id):
-    item = Item.query.get_or_404(item_id)
-    db.session.delete(item)
-    db.session.commit()
-    flash("Item deleted.", "success")
-    return redirect(url_for("admin.dashboard"))
+    
+    # Pre-populate form with current data
+    if request.method == "GET":
+        form.name.data = item.name
+        form.price.data = item.price
+        form.category.data = item.category
+        form.details.data = item.details
+        form.price_id.data = item.price_id
+        # If image is a URL, show it in image_url
+        if item.image and (item.image.startswith("http://") or item.image.startswith("https://")):
+            form.image_url.data = item.image
