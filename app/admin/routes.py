@@ -37,18 +37,38 @@ def add_item():
         # Priority: uploaded file > URL > placeholder
         if form.image_file.data:
             image = form.image_file.data
-            if (
-                image
-                and "." in image.filename
-                and image.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-            ):
+            print(f"DEBUG: Arquivo recebido: {image.filename}")
+            
+            if image and image.filename:
+                # Verificar extensão
                 filename = secure_filename(image.filename)
-                if not os.path.exists(UPLOAD_FOLDER):
-                    os.makedirs(UPLOAD_FOLDER)
-                image.save(os.path.join(UPLOAD_FOLDER, filename))
-                image_filename = filename
+                file_ext = filename.rsplit(".", 1)[1].lower() if "." in filename else ""
+                
+                print(f"DEBUG: Filename seguro: {filename}, Extensão: {file_ext}")
+                
+                if file_ext in ALLOWED_EXTENSIONS:
+                    # Criar pasta se não existir
+                    if not os.path.exists(UPLOAD_FOLDER):
+                        os.makedirs(UPLOAD_FOLDER)
+                        print(f"DEBUG: Pasta criada: {UPLOAD_FOLDER}")
+                    
+                    # Salvar arquivo
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    image.save(filepath)
+                    print(f"DEBUG: Arquivo salvo em: {filepath}")
+                    
+                    if os.path.exists(filepath):
+                        image_filename = filename
+                        print(f"DEBUG: Arquivo confirmado no disco")
+                    else:
+                        flash("Erro ao salvar arquivo.", "error")
+                        return render_template("admin/add.html", form=form, title="Add Item")
+                else:
+                    flash(f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}", "error")
+                    return render_template("admin/add.html", form=form, title="Add Item")
         elif form.image_url.data:
             image_filename = form.image_url.data
+            print(f"DEBUG: URL de imagem: {image_filename}")
 
         new_item = Item(
             name=form.name.data,
@@ -79,23 +99,40 @@ def edit_item(item_id):
         # Handle image update if provided
         if form.image_file.data:
             image = form.image_file.data
-            if (
-                image
-                and "." in image.filename
-                and image.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-            ):
+            print(f"DEBUG: Arquivo recebido para edição: {image.filename}")
+            
+            if image and image.filename:
                 filename = secure_filename(image.filename)
-                if not os.path.exists(UPLOAD_FOLDER):
-                    os.makedirs(UPLOAD_FOLDER)
-                image.save(os.path.join(UPLOAD_FOLDER, filename))
-                item.image = filename
+                file_ext = filename.rsplit(".", 1)[1].lower() if "." in filename else ""
+                
+                print(f"DEBUG: Filename seguro: {filename}, Extensão: {file_ext}")
+                
+                if file_ext in ALLOWED_EXTENSIONS:
+                    if not os.path.exists(UPLOAD_FOLDER):
+                        os.makedirs(UPLOAD_FOLDER)
+                        print(f"DEBUG: Pasta criada: {UPLOAD_FOLDER}")
+                    
+                    filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    image.save(filepath)
+                    print(f"DEBUG: Arquivo salvo em: {filepath}")
+                    
+                    if os.path.exists(filepath):
+                        item.image = filename
+                        print(f"DEBUG: Arquivo confirmado no disco")
+                    else:
+                        flash("Erro ao salvar arquivo.", "error")
+                        return render_template("admin/add.html", form=form, title="Edit Item")
+                else:
+                    flash(f"Extensão não permitida. Use: {', '.join(ALLOWED_EXTENSIONS)}", "error")
+                    return render_template("admin/add.html", form=form, title="Edit Item")
         elif form.image_url.data:
             item.image = form.image_url.data
-        
+            print(f"DEBUG: URL de imagem para edição: {item.image}")
+
         db.session.commit()
         flash("Item updated successfully.", "success")
         return redirect(url_for("admin.dashboard"))
-    
+
     # Pre-populate form with current data
     if request.method == "GET":
         form.name.data = item.name
@@ -104,5 +141,7 @@ def edit_item(item_id):
         form.details.data = item.details
         form.price_id.data = item.price_id
         # If image is a URL, show it in image_url
-        if item.image and (item.image.startswith("http://") or item.image.startswith("https://")):
+        if item.image and (
+            item.image.startswith("http://") or item.image.startswith("https://")
+        ):
             form.image_url.data = item.image
