@@ -216,7 +216,7 @@ def register_client():
         name = request.form.get("name")
         email = request.form.get("email")
         phone = request.form.get("phone")
-        cpf = request.form.get("cpf")
+        cpf = request.form.get("cpf") or None
         cep = request.form.get("cep")
         address = request.form.get("address")
         address_number = request.form.get("address_number")
@@ -281,7 +281,7 @@ def edit_client(client_id):
         name = request.form.get("name")
         email = request.form.get("email")
         phone = request.form.get("phone")
-        cpf = request.form.get("cpf")
+        cpf = request.form.get("cpf") or None
         cep = request.form.get("cep")
         address = request.form.get("address")
         address_number = request.form.get("address_number")
@@ -335,6 +335,80 @@ def delete_client(client_id):
         return redirect(url_for("list_clients"))
 
     return render_template("delete_client.html", client=client)
+
+
+@app.route("/sale/register", methods=["GET", "POST"])
+@login_required
+def register_sale():
+    items = Item.query.all()
+    if request.method == "POST":
+        try:
+            item_id = int(request.form.get("item_id"))
+            quantity = int(request.form.get("quantity") or 1)
+        except Exception:
+            flash("Dados de venda inválidos.", "error")
+            return redirect(url_for("register_sale"))
+
+        order = Order(
+            uid=current_user.id,
+            date=datetime.utcnow(),
+            status=request.form.get("status", "COMPLETED"),
+        )
+        db.session.add(order)
+        db.session.commit()
+
+        ordered_item = Ordered_item(oid=order.id, itemid=item_id, quantity=quantity)
+        db.session.add(ordered_item)
+        db.session.commit()
+
+        flash("Venda registrada com sucesso!", "success")
+        return redirect(url_for("home"))
+
+    return render_template("sale_register.html", items=items)
+
+
+@app.route("/product/<int:item_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_product(item_id):
+    item = Item.query.get_or_404(item_id)
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        item.name = request.form.get("name") or item.name
+        try:
+            item.price = float(request.form.get("price") or item.price)
+        except Exception:
+            pass
+        item.category = request.form.get("category") or item.category
+        item.details = request.form.get("details") or item.details
+        db.session.commit()
+        flash("Produto atualizado com sucesso!", "success")
+        return redirect(
+            url_for("admin.dashboard") if current_user.admin else url_for("home")
+        )
+
+    return render_template("edit_product.html", item=item)
+
+
+@app.route("/product/<int:item_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete_product(item_id):
+    item = Item.query.get_or_404(item_id)
+    if not current_user.admin:
+        flash("Acesso negado.", "error")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        db.session.delete(item)
+        db.session.commit()
+        flash("Produto removido com sucesso!", "success")
+        return redirect(
+            url_for("admin.dashboard") if current_user.admin else url_for("home")
+        )
+
+    return render_template("delete_product.html", item=item)
 
 
 @app.route("/search")

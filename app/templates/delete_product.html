@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-danger text-white">
+          <h3 class="mb-0"><i class="fa-solid fa-trash me-2"></i>Confirmar Exclusão do Produto</h3>
+        </div>
+        <div class="card-body p-4 text-center">
+          <p class="lead">Deseja realmente deletar o produto <strong>{{ item.name }}</strong>?</p>
+          <p class="text-muted small">Esta ação não pode ser desfeita.</p>
+
+          <div class="d-flex gap-2 justify-content-center mt-4">
+            <a href="{{ url_for('admin.dashboard') if current_user.admin else url_for('home') }}" class="btn btn-secondary">Cancelar</a>
+            <form method="POST" style="display:inline-block;">
+              <button type="submit" class="btn btn-danger">Deletar Produto</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.card { border-radius: 10px; }
+</style>
+{% endblock %}

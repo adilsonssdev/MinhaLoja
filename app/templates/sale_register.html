@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0"><i class="fa-solid fa-cart-plus me-2"></i>Registrar Venda</h3>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Produto <span class="text-muted small">(selecione)</span></label>
+              <select class="form-select form-select-lg" name="item_id" required>
+                <option value="">Selecione um produto...</option>
+                {% for it in items %}
+                <option value="{{ it.id }}">{{ it.name }} — R$ {{ '%.2f'|format(it.price) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Quantidade</label>
+                <input type="number" name="quantity" class="form-control form-control-lg" value="1" min="1" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Status da Venda</label>
+                <select class="form-select form-select-lg" name="status">
+                  <option value="COMPLETED">Concluída</option>
+                  <option value="PENDING">Pendente</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-end">
+              <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Registrar Venda</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.card { border-radius: 10px; }
+.form-select, .form-control { border-radius: 8px; }
+</style>
+{% endblock %}
