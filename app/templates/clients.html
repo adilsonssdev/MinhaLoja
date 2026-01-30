@@ -52,9 +52,9 @@
 
     <!-- Tabela de Clientes -->
     {% if clients %}
-    <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead class="table-dark">
+    <div class="table-responsive shadow-sm rounded" style="max-height: 75vh; overflow: auto;">
+        <table class="table table-hover table-striped mb-0 text-nowrap">
+            <thead class="table-dark" style="position: sticky; top: 0; z-index: 1;">
                 <tr>
                     <th><i class="fa-solid fa-hashtag me-2"></i>ID</th>
                     <th><i class="fa-solid fa-user me-2"></i>Nome</th>
