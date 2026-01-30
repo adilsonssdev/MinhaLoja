@@ -31,17 +31,19 @@
                         <!-- Row 3: CPF e CEP -->
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label for="cpf" class="form-label fw-bold">CPF</label>
-                                <input type="text" class="form-control form-control-lg" id="cpf" name="cpf" placeholder="123.456.789-10">
+                                <label for="cpf" class="form-label fw-bold">CPF <small class="text-muted">(11 dígitos)</small></label>
+                                <input type="text" class="form-control form-control-lg" id="cpf" name="cpf" placeholder="123.456.789-10" maxlength="14" inputmode="numeric">
+                                <small class="text-muted d-block mt-1">Formato: XXX.XXX.XXX-XX</small>
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label for="cep" class="form-label fw-bold">CEP</label>
+                                <label for="cep" class="form-label fw-bold">CEP <small class="text-muted">(8 dígitos)</small></label>
                                 <div class="input-group input-group-lg">
-                                    <input type="text" class="form-control" id="cep" name="cep" placeholder="12345-678">
+                                    <input type="text" class="form-control" id="cep" name="cep" placeholder="12345-678" maxlength="9" inputmode="numeric">
                                     <span class="input-group-text" id="cep-loading" style="display: none;">
                                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     </span>
                                 </div>
+                                <small class="text-muted d-block mt-1">Formato: XXXXX-XXX</small>
                             </div>
                         </div>
 
@@ -145,6 +147,37 @@
 </style>
 
 <script>
+    // Máscara e Validação de CPF
+    document.getElementById('cpf').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) {
+            value = value.slice(0, 11);
+        }
+        
+        if (value.length > 0) {
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+            value = value.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+        }
+        
+        e.target.value = value;
+    });
+
+    // Máscara e Validação de CEP
+    document.getElementById('cep').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 8) {
+            value = value.slice(0, 8);
+        }
+        
+        if (value.length > 0) {
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+        }
+        
+        e.target.value = value;
+    });
+
+    // ViaCEP Integration
     document.getElementById('cep').addEventListener('blur', function() {
         let cep = this.value.replace(/\D/g, '');
         
