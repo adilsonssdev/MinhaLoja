@@ -251,6 +251,20 @@ def register_client():
     return render_template("register_client.html")
 
 
+@app.route("/clients")
+@login_required
+def list_clients():
+    clients = Client.query.all()
+    return render_template("clients.html", clients=clients)
+
+
+@app.route("/client/<int:client_id>")
+@login_required
+def view_client(client_id):
+    client = Client.query.get_or_404(client_id)
+    return render_template("client_detail.html", client=client)
+
+
 @app.route("/search")
 def search():
     query = request.args["query"]

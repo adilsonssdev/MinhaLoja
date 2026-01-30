@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0"><i class="fa-solid fa-users me-3"></i>Cadastro de Clientes</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('register_client') }}" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-user-plus me-2"></i>Novo Cliente
+            </a>
+        </div>
+    </div>
+
+    {% if clients %}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th><i class="fa-solid fa-hashtag me-2"></i>ID</th>
+                    <th><i class="fa-solid fa-user me-2"></i>Nome</th>
+                    <th><i class="fa-solid fa-envelope me-2"></i>E-mail</th>
+                    <th><i class="fa-solid fa-phone me-2"></i>Telefone</th>
+                    <th><i class="fa-solid fa-id-card me-2"></i>CPF</th>
+                    <th><i class="fa-solid fa-map-location-dot me-2"></i>Cidade</th>
+                    <th><i class="fa-solid fa-calendar me-2"></i>Data Cadastro</th>
+                    <th><i class="fa-solid fa-badge-check me-2"></i>Status</th>
+                    <th class="text-center"><i class="fa-solid fa-cogs me-2"></i>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td><span class="badge bg-secondary">{{ client.id }}</span></td>
+                    <td><strong>{{ client.name }}</strong></td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.cpf or '-' }}</td>
+                    <td>{{ client.city or '-' }}</td>
+                    <td>{{ client.registration_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        {% if client.status == 'ATIVO' %}
+                            <span class="badge bg-success">{{ client.status }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">{{ client.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ url_for('view_client', client_id=client.id) }}" class="btn btn-sm btn-info" title="Visualizar">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <button class="btn btn-sm btn-warning" title="Editar" onclick="alert('Edição em desenvolvimento')">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" title="Deletar" onclick="alert('Exclusão em desenvolvimento')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mt-5">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Total de Clientes</h6>
+                    <h2 class="card-text">{{ clients|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Clientes Ativos</h6>
+                    <h2 class="card-text">{{ clients|selectattr('status', 'equalto', 'ATIVO')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-danger text-white">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Clientes Inativos</h6>
+                    <h2 class="card-text">{{ clients|selectattr('status', 'equalto', 'INATIVO')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title opacity-75">Novos Este Mês</h6>
+                    <h2 class="card-text">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center py-5" role="alert">
+        <i class="fa-solid fa-inbox fa-3x mb-3 d-block text-muted"></i>
+        <h4>Nenhum cliente cadastrado</h4>
+        <p class="mb-3">Comece adicionando um novo cliente clicando no botão abaixo.</p>
+        <a href="{{ url_for('register_client') }}" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-user-plus me-2"></i>Cadastrar Primeiro Cliente
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .table {
+        font-size: 0.95rem;
+    }
+    
+    .table th {
+        font-weight: 600;
+        border: none;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+    
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-weight: 500;
+    }
+    
+    .btn-sm {
+        padding: 0.4rem 0.6rem;
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+    
+    .btn-sm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card {
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+</style>
+{% endblock %}

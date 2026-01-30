@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0"><i class="fa-solid fa-user-circle me-3"></i>Detalhes do Cliente</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('list_clients') }}" class="btn btn-secondary btn-lg">
+                <i class="fa-solid fa-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Card Principal -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">{{ client.name }}</h2>
+                        <span class="badge bg-light text-primary fs-6">ID: {{ client.id }}</span>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Informações Pessoais -->
+                    <h5 class="mb-4 text-primary"><i class="fa-solid fa-user me-2"></i>Informações Pessoais</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">E-mail</label>
+                            <p class="fs-6">{{ client.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">Telefone</label>
+                            <p class="fs-6">{{ client.phone }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">CPF</label>
+                            <p class="fs-6">{{ client.cpf or 'Não informado' }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">Banco</label>
+                            <p class="fs-6">{{ client.bank or 'Não informado' }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Endereço -->
+                    <h5 class="mb-4 text-primary"><i class="fa-solid fa-map-location-dot me-2"></i>Endereço</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold text-muted">Endereço</label>
+                            <p class="fs-6">{{ client.address or 'Não informado' }}</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold text-muted">Número</label>
+                            <p class="fs-6">{{ client.address_number or '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">Cidade</label>
+                            <p class="fs-6">{{ client.city or 'Não informado' }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold text-muted">Estado</label>
+                            <p class="fs-6">{{ client.state or '-' }}</p>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold text-muted">CEP</label>
+                            <p class="fs-6">{{ client.cep or '-' }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Status -->
+                    <h5 class="mb-4 text-primary"><i class="fa-solid fa-badge-check me-2"></i>Status e Data</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">Status</label>
+                            {% if client.status == 'ATIVO' %}
+                                <p><span class="badge bg-success fs-6">{{ client.status }}</span></p>
+                            {% else %}
+                                <p><span class="badge bg-danger fs-6">{{ client.status }}</span></p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold text-muted">Data de Cadastro</label>
+                            <p class="fs-6">{{ client.registration_date.strftime('%d/%m/%Y às %H:%M:%S') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="mt-4 d-flex gap-2">
+                <button class="btn btn-warning btn-lg" onclick="alert('Edição em desenvolvimento')">
+                    <i class="fa-solid fa-pencil me-2"></i>Editar Cliente
+                </button>
+                <button class="btn btn-danger btn-lg" onclick="alert('Exclusão em desenvolvimento')">
+                    <i class="fa-solid fa-trash me-2"></i>Deletar Cliente
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar com resumo -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa-solid fa-info-circle me-2"></i>Resumo
+                    </h6>
+                    <div class="mb-3">
+                        <small class="text-muted">ID do Cliente</small>
+                        <p class="mb-0 fw-bold">#{{ client.id }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Status Atual</small>
+                        <p class="mb-0">
+                            {% if client.status == 'ATIVO' %}
+                                <span class="badge bg-success">Ativo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inativo</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted">Cadastrado em</small>
+                        <p class="mb-0">{{ client.registration_date.strftime('%d de %B de %Y') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa-solid fa-file-pdf me-2"></i>Documentos
+                    </h6>
+                    {% if client.cpf %}
+                        <p class="mb-2"><i class="fa-solid fa-check text-success me-2"></i>CPF: {{ client.cpf }}</p>
+                    {% else %}
+                        <p class="mb-2"><i class="fa-solid fa-times text-danger me-2"></i>CPF não informado</p>
+                    {% endif %}
+                    
+                    {% if client.cep %}
+                        <p class="mb-0"><i class="fa-solid fa-check text-success me-2"></i>CEP: {{ client.cep }}</p>
+                    {% else %}
+                        <p class="mb-0"><i class="fa-solid fa-times text-danger me-2"></i>CEP não informado</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
