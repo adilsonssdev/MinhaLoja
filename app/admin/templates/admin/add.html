@@ -1,68 +1,93 @@
 {% extends "base.html" %}
-{% from 'bootstrap5/form.html' import render_form %}
 
 {% block title %}{{ title }} - MiniLoja{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-5">
-    <div class="col-md-8 col-lg-6">
-        <div class="bg-white rounded-3 shadow-sm p-4 text-start">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold mb-0">{{ title }}</h3>
-                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary">Back</a>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ title }}</h4>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Nome do Produto -->
+                        <div class="mb-4">
+                            {{ form.name.label(class="form-label fw-bold") }}
+                            {{ form.name(class="form-control form-control-lg", placeholder="Ex: Smart TV 55\"") }}
+                            {% if form.name.errors %}<div class="alert alert-danger mt-2">{% for error in form.name.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                        </div>
+
+                        <!-- Preço e Categoria -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.price.label(class="form-label fw-bold") }}
+                                {{ form.price(class="form-control form-control-lg", placeholder="0.00") }}
+                                {% if form.price.errors %}<div class="alert alert-danger mt-2">{% for error in form.price.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                {{ form.category.label(class="form-label fw-bold") }}
+                                {{ form.category(class="form-control form-control-lg", placeholder="Ex: Eletrônicos") }}
+                                {% if form.category.errors %}<div class="alert alert-danger mt-2">{% for error in form.category.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Upload de Arquivo OU URL -->
+                        <div class="alert alert-info">
+                            <strong>Imagem:</strong> Você pode fazer upload de um arquivo OU fornecer uma URL
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                {{ form.image_file.label(class="form-label fw-bold") }}
+                                {{ form.image_file(class="form-control form-control-lg") }}
+                                {% if form.image_file.errors %}<div class="alert alert-danger mt-2">{% for error in form.image_file.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                {{ form.image_url.label(class="form-label fw-bold") }}
+                                {{ form.image_url(class="form-control form-control-lg", placeholder="https://exemplo.com/imagem.jpg") }}
+                                {% if form.image_url.errors %}<div class="alert alert-danger mt-2">{% for error in form.image_url.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Detalhes -->
+                        <div class="mb-4">
+                            {{ form.details.label(class="form-label fw-bold") }}
+                            {{ form.details(class="form-control form-control-lg", rows="4", placeholder="Descreva o produto...") }}
+                            {% if form.details.errors %}<div class="alert alert-danger mt-2">{% for error in form.details.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                        </div>
+
+                        <!-- Stripe Price ID -->
+                        <div class="mb-4">
+                            {{ form.price_id.label(class="form-label fw-bold") }}
+                            {{ form.price_id(class="form-control form-control-lg", placeholder="(Opcional) Stripe Price ID") }}
+                            {% if form.price_id.errors %}<div class="alert alert-danger mt-2">{% for error in form.price_id.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary btn-lg">
+                                <i class="fa-solid fa-arrow-left me-2"></i>Voltar
+                            </a>
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                
-                <!-- Render fields in specific order -->
-                <div class="mb-3">
-                    {{ form.name.label(class="form-label fw-bold") }}
-                    {{ form.name(class="form-control form-control-lg") }}
-                    {% if form.name.errors %}<div class="invalid-feedback d-block">{% for error in form.name.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.price.label(class="form-label fw-bold") }}
-                    {{ form.price(class="form-control form-control-lg") }}
-                    {% if form.price.errors %}<div class="invalid-feedback d-block">{% for error in form.price.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.category.label(class="form-label fw-bold") }}
-                    {{ form.category(class="form-control form-control-lg") }}
-                    {% if form.category.errors %}<div class="invalid-feedback d-block">{% for error in form.category.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.image_file.label(class="form-label fw-bold") }}
-                    {{ form.image_file(class="form-control form-control-lg") }}
-                    {% if form.image_file.errors %}<div class="invalid-feedback d-block">{% for error in form.image_file.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.image_url.label(class="form-label fw-bold") }}
-                    {{ form.image_url(class="form-control form-control-lg", placeholder="https://exemplo.com/imagem.jpg") }}
-                    {% if form.image_url.errors %}<div class="invalid-feedback d-block">{% for error in form.image_url.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.details.label(class="form-label fw-bold") }}
-                    {{ form.details(class="form-control form-control-lg", rows="4") }}
-                    {% if form.details.errors %}<div class="invalid-feedback d-block">{% for error in form.details.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="mb-3">
-                    {{ form.price_id.label(class="form-label fw-bold") }}
-                    {{ form.price_id(class="form-control form-control-lg") }}
-                    {% if form.price_id.errors %}<div class="invalid-feedback d-block">{% for error in form.price_id.errors %}{{ error }}<br>{% endfor %}</div>{% endif %}
-                </div>
-
-                <div class="d-grid gap-2">
-                    {{ form.submit(class="btn btn-primary btn-lg") }}
-                </div>
-            </form>
         </div>
     </div>
 </div>
+
+<style>
+    .card { border-radius: 12px; }
+    .form-label { color: #333; font-size: 0.95rem; }
+    .form-control, .form-control-lg { border-radius: 8px; border: 1px solid #ddd; }
+    .form-control:focus, .form-control-lg:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); }
+    .alert { border-radius: 8px; }
+    .btn { border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+</style>
 {% endblock %}
