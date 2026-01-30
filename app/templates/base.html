@@ -75,8 +75,9 @@
                   <li><hr class="dropdown-divider"></li>
                   {% if current_user.admin == 1 %}
                     <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-gauge me-2 text-muted"></i>Admin</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('admin.add_item') }}"><i class="fa-solid fa-plus me-2 text-muted"></i>Add Item</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('admin.dashboard') }}"><i class="fa-solid fa-boxes-stacked me-2 text-muted"></i>Gerenciar Produtos</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.add_item') }}"><i class="fa-solid fa-plus me-2 text-muted"></i>Cadastrar Produto</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('manage_products') }}"><i class="fa-solid fa-boxes-stacked me-2 text-muted"></i>Gerenciar Produtos</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('manage_payments') }}"><i class="fa-solid fa-credit-card me-2 text-muted"></i>Formas Pagamento</a></li>
                     <li><hr class="dropdown-divider"></li>
                   {% endif %}
                   <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>

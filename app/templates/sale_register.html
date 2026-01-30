@@ -1,42 +1,109 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
+<div class="container-fluid py-5">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-0"><i class="fa-solid fa-receipt me-2"></i>Cadastrar Custo</h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6 mx-auto">
+      <div class="card border-0 shadow-lg">
         <div class="card-header bg-primary text-white">
-          <h3 class="mb-0"><i class="fa-solid fa-cart-plus me-2"></i>Registrar Venda</h3>
+          <h5 class="mb-0"><i class="fa-solid fa-plus me-2"></i>Novo Custo</h5>
         </div>
         <div class="card-body p-4">
-          <form method="POST">
-            <div class="mb-3">
-              <label class="form-label fw-bold">Produto <span class="text-muted small">(selecione)</span></label>
-              <select class="form-select form-select-lg" name="item_id" required>
-                <option value="">Selecione um produto...</option>
-                {% for it in items %}
-                <option value="{{ it.id }}">{{ it.name }} — R$ {{ '%.2f'|format(it.price) }}</option>
-                {% endfor %}
-              </select>
+          <form method="POST" action="{{ url_for('register_sale') }}">
+            
+            <!-- Código da Venda -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">CÓD.</label>
+              <input type="text" class="form-control form-control-lg" value="Auto-gerado" disabled>
             </div>
 
-            <div class="row mb-3">
+            <!-- Data da Compra -->
+            <div class="row mb-4">
               <div class="col-md-6">
-                <label class="form-label fw-bold">Quantidade</label>
-                <input type="number" name="quantity" class="form-control form-control-lg" value="1" min="1" required>
+                <label class="form-label fw-bold">DATA DA COMPRA</label>
+                <input type="date" class="form-control form-control-lg" value="{{ now.strftime('%Y-%m-%d') }}" disabled>
               </div>
               <div class="col-md-6">
-                <label class="form-label fw-bold">Status da Venda</label>
-                <select class="form-select form-select-lg" name="status">
-                  <option value="COMPLETED">Concluída</option>
-                  <option value="PENDING">Pendente</option>
+                <label class="form-label fw-bold">FORMA DE PAG.</label>
+                <select class="form-select form-select-lg" required>
+                  <option value="">Selecione uma forma...</option>
+                  <option value="CREDITCARD">Cartão de Crédito</option>
+                  <option value="DEBIT">Cartão de Débito</option>
+                  <option value="BOLETO">Boleto Bancário</option>
+                  <option value="PIX">Pix</option>
+                  <option value="TRANSFER">Transferência</option>
                 </select>
               </div>
             </div>
 
-            <div class="d-flex gap-2 justify-content-end">
-              <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancelar</a>
-              <button type="submit" class="btn btn-primary">Registrar Venda</button>
+            <!-- Produto -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">DESCRIÇÃO</label>
+              <select name="item_id" class="form-select form-select-lg" required>
+                <option value="">Selecione um produto...</option>
+                {% for it in items %}
+                <option value="{{ it.id }}">{{ it.name }} - R$ {{ '%.2f'|format(it.price) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Cliente -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">CLIENTE</label>
+              <input type="text" class="form-control form-control-lg" placeholder="Nome do cliente" value="{{ current_user.name or current_user.email }}" disabled>
+            </div>
+
+            <!-- Quantidade e Preço -->
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <label class="form-label fw-bold">VALOR</label>
+                <input type="number" name="quantity" step="0.01" class="form-control form-control-lg" value="1" min="1" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">DATA VENC. 1ª PARC.</label>
+                <input type="date" class="form-control form-control-lg">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-bold">PARCELAS</label>
+                <input type="number" class="form-control form-control-lg" value="1" min="1">
+              </div>
+            </div>
+
+            <!-- Status e Valor Total -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">STATUS</label>
+                <select name="status" class="form-select form-select-lg">
+                  <option value="COMPLETED">Completado</option>
+                  <option value="PENDING">Pendente</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">VALOR TOTAL</label>
+                <input type="text" class="form-control form-control-lg" value="0,00" disabled>
+              </div>
+            </div>
+
+            <!-- Observação -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">OBSERVAÇÃO</label>
+              <textarea class="form-control" rows="3" placeholder="Adicione observações sobre a venda..."></textarea>
+            </div>
+
+            <!-- Botões -->
+            <div class="d-flex gap-3 justify-content-end">
+              <a href="{{ url_for('home') }}" class="btn btn-secondary btn-lg">
+                <i class="fa-solid fa-times me-2"></i>Voltar
+              </a>
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-save me-2"></i>Cadastrar
+              </button>
             </div>
           </form>
         </div>
@@ -46,7 +113,12 @@
 </div>
 
 <style>
-.card { border-radius: 10px; }
-.form-select, .form-control { border-radius: 8px; }
+  .card { border-radius: 10px; }
+  .form-label { font-size: 0.85rem; letter-spacing: 0.5px; }
+  .form-control, .form-select { border-radius: 6px; border: 1px solid #dee2e6; }
+  .form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); }
+  .btn { transition: all 0.2s; border-radius: 6px; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .card-header { border-radius: 10px 10px 0 0; }
 </style>
 {% endblock %}

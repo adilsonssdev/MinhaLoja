@@ -1,86 +1,103 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row">
-    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-      <h2 class="mb-0"><i class="fa-solid fa-boxes me-2"></i>Produtos</h2>
-      <a href="#addProduct" class="btn btn-primary" data-bs-toggle="collapse">Cadastrar Produto</a>
+<div class="container-fluid py-5">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-0"><i class="fa-solid fa-boxes me-2"></i>Gerenciar Produtos</h1>
     </div>
+  </div>
 
+  <!-- Card de Cadastro -->
+  <div class="row mb-4">
     <div class="col-lg-6">
-      <div class="collapse" id="addProduct">
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body p-4">
-            <form method="POST" action="{{ url_for('add_product') }}">
-              <div class="mb-3">
-                <label class="form-label">Nome</label>
-                <input name="name" class="form-control form-control-lg" required>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fa-solid fa-plus me-2"></i>Cadastrar Novo Produto</h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" action="{{ url_for('add_product') }}">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nome do Produto</label>
+              <input type="text" name="name" class="form-control form-control-lg" placeholder="Digite o nome" required>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Preço (R$)</label>
+                <input type="number" step="0.01" name="price" class="form-control form-control-lg" placeholder="0.00" required>
               </div>
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Preço (R$)</label>
-                  <input name="price" type="number" step="0.01" class="form-control form-control-lg" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Categoria</label>
-                  <input name="category" class="form-control form-control-lg">
-                </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Categoria</label>
+                <input type="text" name="category" class="form-control form-control-lg" placeholder="Ex: Eletrônicos">
               </div>
-              <div class="mb-3">
-                <label class="form-label">Detalhes</label>
-                <textarea name="details" class="form-control" rows="3"></textarea>
-              </div>
-
-              <div class="d-flex justify-content-end gap-2">
-                <a class="btn btn-secondary" data-bs-toggle="collapse" href="#addProduct">Cancelar</a>
-                <button class="btn btn-primary" type="submit">Cadastrar</button>
-              </div>
-            </form>
-          </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Detalhes</label>
+              <textarea name="details" class="form-control" rows="3" placeholder="Descrição do produto"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+              <i class="fa-solid fa-save me-2"></i>Cadastrar Produto
+            </button>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- Tabela de Produtos -->
+  <div class="row">
+    <div class="col-12">
       <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Produtos Cadastrados ({{ items|length }})</h5>
+        </div>
         <div class="card-body p-0">
+          {% if items %}
           <div class="table-responsive">
-            <table class="table mb-0">
+            <table class="table table-hover mb-0">
               <thead class="table-light">
                 <tr>
-                  <th>#</th>
+                  <th style="width: 10%">#ID</th>
                   <th>Nome</th>
-                  <th>Preço</th>
-                  <th>Categoria</th>
-                  <th class="text-end">Ações</th>
+                  <th style="width: 15%">Preço</th>
+                  <th style="width: 15%">Categoria</th>
+                  <th style="width: 20%">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {% for it in items %}
+                {% for product in items %}
                 <tr>
-                  <td>{{ it.id }}</td>
-                  <td>{{ it.name }}</td>
-                  <td>R$ {{ '%.2f'|format(it.price) }}</td>
-                  <td>{{ it.category }}</td>
-                  <td class="text-end">
-                    <a href="{{ url_for('edit_product', item_id=it.id) }}" class="btn btn-sm btn-warning me-1">Editar</a>
-                    <a href="{{ url_for('delete_product', item_id=it.id) }}" class="btn btn-sm btn-danger">Remover</a>
+                  <td><span class="badge bg-secondary">{{ product.id }}</span></td>
+                  <td><strong>{{ product.name }}</strong></td>
+                  <td><strong>R$ {{ '%.2f'|format(product.price) }}</strong></td>
+                  <td>{{ product.category }}</td>
+                  <td>
+                    <a href="{{ url_for('edit_product', item_id=product.id) }}" class="btn btn-sm btn-warning me-1">
+                      <i class="fa-solid fa-pencil"></i> Editar
+                    </a>
+                    <a href="{{ url_for('delete_product', item_id=product.id) }}" class="btn btn-sm btn-danger">
+                      <i class="fa-solid fa-trash"></i> Remover
+                    </a>
                   </td>
                 </tr>
-                {% else %}
-                <tr><td colspan="5" class="text-center py-4">Nenhum produto cadastrado.</td></tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+          {% else %}
+          <div class="alert alert-info m-0">
+            <i class="fa-solid fa-info-circle me-2"></i><strong>Nenhum produto cadastrado ainda.</strong> Cadastre o primeiro produto acima.
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <style>
-.card { border-radius: 10px; }
-.table td, .table th { vertical-align: middle; }
+  .card { border-radius: 10px; }
+  .btn { transition: all 0.2s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 </style>
 {% endblock %}

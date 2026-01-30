@@ -1,81 +1,104 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row">
-    <div class="col-12 mb-4 d-flex justify-content-between align-items-center">
-      <h2 class="mb-0"><i class="fa-solid fa-credit-card me-2"></i>Formas de Pagamento</h2>
-      <a href="#addPay" class="btn btn-primary" data-bs-toggle="collapse">Nova Forma</a>
+<div class="container-fluid py-5">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mb-0"><i class="fa-solid fa-credit-card me-2"></i>Formas de Pagamento</h1>
     </div>
+  </div>
 
+  <!-- Card de Cadastro -->
+  <div class="row mb-4">
     <div class="col-lg-6">
-      <div class="collapse" id="addPay">
-        <div class="card border-0 shadow-sm mb-4">
-          <div class="card-body p-4">
-            <form method="POST" action="{{ url_for('add_payment_method') }}">
-              <div class="mb-3">
-                <label class="form-label">Nome</label>
-                <input name="name" class="form-control form-control-lg" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Descrição</label>
-                <textarea name="description" class="form-control" rows="2"></textarea>
-              </div>
-              <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="allow_installments" name="allow_installments">
-                <label class="form-check-label" for="allow_installments">Permitir parcelamento</label>
-              </div>
-
-              <div class="d-flex justify-content-end gap-2">
-                <a class="btn btn-secondary" data-bs-toggle="collapse" href="#addPay">Cancelar</a>
-                <button class="btn btn-primary" type="submit">Cadastrar</button>
-              </div>
-            </form>
-          </div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="fa-solid fa-plus me-2"></i>Nova Forma de Pagamento</h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" action="{{ url_for('add_payment_method') }}">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nome da Forma</label>
+              <input type="text" name="name" class="form-control form-control-lg" placeholder="Ex: Cartão de Crédito" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Descrição</label>
+              <textarea name="description" class="form-control" rows="2" placeholder="Descrição da forma de pagamento"></textarea>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="allow_installments" name="allow_installments" value="on">
+              <label class="form-check-label" for="allow_installments">
+                <strong>Permitir parcelamento</strong>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+              <i class="fa-solid fa-save me-2"></i>Cadastrar Forma
+            </button>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- Tabela de Formas de Pagamento -->
+  <div class="row">
+    <div class="col-12">
       <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0"><i class="fa-solid fa-list me-2"></i>Formas Cadastradas ({{ payments|length }})</h5>
+        </div>
         <div class="card-body p-0">
+          {% if payments %}
           <div class="table-responsive">
-            <table class="table mb-0">
+            <table class="table table-hover mb-0">
               <thead class="table-light">
                 <tr>
-                  <th>#</th>
+                  <th style="width: 10%">#ID</th>
                   <th>Nome</th>
                   <th>Descrição</th>
-                  <th>Parcelas</th>
-                  <th class="text-end">Ações</th>
+                  <th style="width: 15%">Parcelamento</th>
+                  <th style="width: 15%">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {% for pm in payments %}
+                {% for payment in payments %}
                 <tr>
-                  <td>{{ pm.id }}</td>
-                  <td>{{ pm.name }}</td>
-                  <td>{{ pm.description or '-' }}</td>
-                  <td>{% if pm.allow_installments %}Sim{% else %}Não{% endif %}</td>
-                  <td class="text-end">
-                    <form method="POST" action="{{ url_for('delete_payment_method', pm_id=pm.id) }}" style="display:inline-block;">
-                      <button class="btn btn-sm btn-danger">Remover</button>
+                  <td><span class="badge bg-secondary">{{ payment.id }}</span></td>
+                  <td><strong>{{ payment.name }}</strong></td>
+                  <td>{{ payment.description or '-' }}</td>
+                  <td>
+                    {% if payment.allow_installments %}
+                    <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Sim</span>
+                    {% else %}
+                    <span class="badge bg-secondary"><i class="fa-solid fa-times me-1"></i>Não</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form method="POST" action="{{ url_for('delete_payment_method', pm_id=payment.id) }}" style="display:inline;">
+                      <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Deseja realmente remover?')">
+                        <i class="fa-solid fa-trash"></i> Remover
+                      </button>
                     </form>
                   </td>
                 </tr>
-                {% else %}
-                <tr><td colspan="5" class="text-center py-4">Nenhuma forma de pagamento cadastrada.</td></tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
+          {% else %}
+          <div class="alert alert-info m-0">
+            <i class="fa-solid fa-info-circle me-2"></i><strong>Nenhuma forma de pagamento cadastrada ainda.</strong> Cadastre a primeira acima.
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <style>
-.card { border-radius: 10px; }
-.table td, .table th { vertical-align: middle; }
+  .card { border-radius: 10px; }
+  .btn { transition: all 0.2s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 </style>
 {% endblock %}

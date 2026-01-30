@@ -11,7 +11,7 @@ from flask_login import (
     login_required,
     logout_user,
 )
-from .db_models import db, User, Item, Client, PaymentMethod
+from .db_models import db, User, Item, Client, PaymentMethod, Order, Ordered_item
 from itsdangerous import URLSafeTimedSerializer
 from .funcs import mail, send_confirmation_email, fulfill_order
 from dotenv import load_dotenv
